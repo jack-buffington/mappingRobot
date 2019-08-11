@@ -138,7 +138,7 @@ std::vector<std::string> findAllRobots(std::string thisComputersIPaddress)
         n = recvfrom(incomingSockfd, buffer, BUFFER_SIZE, 0, (struct sockaddr*) &incomingAddr, &len);
         std::cout << "Bytes received: " << n << std::endl;
 
-        if(bytesReceived != -1 && buffer[0] == 1)
+        if(n != -1 && buffer[0] == 1)
             std::cout << "This is a hello packet for serial number " << buffer[1] + 0 << std::endl;
         else
             std::cout << "This wasn't a hello packet." <<  std::endl;
@@ -146,6 +146,29 @@ std::vector<std::string> findAllRobots(std::string thisComputersIPaddress)
     }
     return returnVector;
 }
+
+
+
+
+
+
+// bool timeout_recvfrom(int sockFD, sockaddr_in* sockfrom, void *buffer, unsigned int bufferLength, int timeoutInMicroseconds)
+// { // This code is based on a comment from https://programmersheaven.com/discussion/353252/how-to-set-timeout-for-recvfrom-method
+//   fd_set socks;
+//   struct timeval t;
+//   FD_ZERO(&socks);
+//   FD_SET(sockFD, &socks);
+//   t.tv_usec = timeoutInMicroseconds;
+//   unsigned int len;
+
+//   if (select(sockFD + 1, &socks, NULL, NULL, &t))
+//   {
+//     recvfrom(sockFD, buffer, bufferLength, 0, (const struct sockaddr*) sockfrom, &len);
+//     return true;
+//   }
+//   else
+//     return false;
+// }
 
 
 
