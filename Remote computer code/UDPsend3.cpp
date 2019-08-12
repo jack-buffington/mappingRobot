@@ -57,6 +57,10 @@ std::string findMyIPaddress()
 { // Finds this computer's IP address through a system call
     std::string thisIP = exec("hostname -I");
     std::cout << "This computer's IP address is " << thisIP << "." << std::endl;
+
+    // Strip the carriage return from the end of the IP address
+    thisIP = thisIP.substr(0,thisIP.length()-2); // -2 because there is a space and a carriage return in the result
+
     return thisIP;
 }
 
@@ -115,34 +119,49 @@ std::vector<std::string> findAllRobots(std::string thisComputersIPaddress)
 
     // Contact each IP address and see if it receives a reply from a robot
 
-    // std::string helloString = "hello\x00\x01\x02\x03\x04\x05\xFF ";  // \x<hex code> allows me to enter byte values
-    // helloString += thisComputersIPaddress;
 
 
-    // The method below seems to be the best way to construct these messages, or at least the ones that aren't pure binary.
-    // I can't explicitly put a 0x00 in there because the compiler will complain so I can sneak it in there later.  As long as I tell 
-    // sendto the correct number of characters, everything will work.   strlen will see the 0 and assume that it is a terminating character.
 
     char test2[100];
     int n = sprintf(test2, " %s", thisComputersIPaddress.c_str()); // n contains how many characters were printed out
     test2[0] = 1;
     unsigned int len;
 
-    for(unsigned int I = 0; I < IPaddresses.size() - 1; I++)
+
+    // FOR TESTING ONLY!!!!!!!
+    // IPaddresses = {"192.168.1.22", ""};
+    // std::cout << "Size of IP addresses: " << IPaddresses.size() << std::endl;
+
+
+    // TODO:  There is a bug here that it will see the message to itself as a return hello packet.  
+
+    std::cout << "thisComputersIPaddress: #" << thisComputersIPaddress << "#" << std::endl;
+    for(unsigned int I = 0; I < IPaddresses.size() - 1; I++)  
     {
-        std::cout << "Querying IP address #" << I << ": " << IPaddresses[I] << std::endl;
+      if(IPaddresses[I] != thisComputersIPaddress)
+      {
+        std::cout << "Querying IP address #" << I << ": #" << IPaddresses[I] << "#" << std::endl;
         inet_aton(IPaddresses[I].c_str(), &outgoingAddr.sin_addr);
         //sendto(sockfd, (const char *)helloString.c_str(), helloString.length(), MSG_CONFIRM, (const struct sockaddr *) &servaddr,  sizeof(servaddr));
         sendto(outgoingSockfd, (const char *)test2, n, MSG_CONFIRM, (const struct sockaddr *) &outgoingAddr,  sizeof(outgoingAddr));
 
-        n = recvfrom(incomingSockfd, buffer, BUFFER_SIZE, 0, (struct sockaddr*) &incomingAddr, &len);
-        std::cout << "Bytes received: " << n << std::endl;
 
-        if(n != -1 && buffer[0] == 1)
-            std::cout << "This is a hello packet for serial number " << buffer[1] + 0 << std::endl;
+        bool receivedSomething = recvFromWithTimeout(incomingSockfd, &incomingAddr, buffer, BUFFER_SIZE, 500); // Try receiving for 500 milliseconds (1/2 second)
+        if(receivedSomething)
+        {
+          std::cout << "It received something." <<  std::endl;
+          if(buffer[0] == 1)
+            std::cout << "  It received a hello packet!" << std::endl;  
+        }
         else
-            std::cout << "This wasn't a hello packet." <<  std::endl;
-
+        {
+          std::cout << "It didn't receive anything." <<  std::endl;
+        }
+      }
+      else
+      {
+        std::cout << "Skipping " << IPaddresses[I] << " because that is this computer." << std::endl;
+      }
     }
     return returnVector;
 }
@@ -152,23 +171,37 @@ std::vector<std::string> findAllRobots(std::string thisComputersIPaddress)
 
 
 
-// bool timeout_recvfrom(int sockFD, sockaddr_in* sockfrom, void *buffer, unsigned int bufferLength, int timeoutInMicroseconds)
-// { // This code is based on a comment from https://programmersheaven.com/discussion/353252/how-to-set-timeout-for-recvfrom-method
-//   fd_set socks;
-//   struct timeval t;
-//   FD_ZERO(&socks);
-//   FD_SET(sockFD, &socks);
-//   t.tv_usec = timeoutInMicroseconds;
-//   unsigned int len;
 
-//   if (select(sockFD + 1, &socks, NULL, NULL, &t))
-//   {
-//     recvfrom(sockFD, buffer, bufferLength, 0, (const struct sockaddr*) sockfrom, &len);
-//     return true;
-//   }
-//   else
-//     return false;
-// }
+
+bool recvFromWithTimeout(int sockFD, sockaddr_in* sockfrom, void *buffer, unsigned int bufferLength, int timeoutInMilliseconds)
+{ // This is my own take on receiving with a timeout
+
+
+
+  // Just wait for the required duration and then check to see if something is there. 
+  // std::cout << "Going to sleep...";
+  // //usleep(timeoutInMilliseconds * 1000);
+  // std::cout << "   Awake now!" << std::endl;
+
+  struct pollfd poll_list;
+  poll_list.fd = sockFD;
+  poll_list.events = POLLIN;  // POLLIN: There is data to receive 
+
+  int retVal = poll(&poll_list,1,timeoutInMilliseconds);  // Wait for 500ms to see if something happened
+
+  std::cout << "Retval: " << retVal << std::endl;
+
+  unsigned int len;
+  if(retVal == 1)
+  {
+    recvfrom(sockFD, buffer, bufferLength, 0, (struct sockaddr*) sockfrom, &len);
+    return true;
+  }
+  else
+    return false;
+}
+
+
 
 
 
