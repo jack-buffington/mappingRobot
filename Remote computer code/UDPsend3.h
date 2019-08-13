@@ -19,6 +19,12 @@
 #include <poll.h>   // TODO:  go through all of these and see which are still necessary
 
 
+struct robotIP
+{
+	std::string IPaddress;
+	int serialNumber;
+};
+
 // int sockfd; // Global so that I don't have to pass this to any function that involves communication with the robot 
 // struct sockaddr_in     servaddr;  // Same here
 
@@ -36,7 +42,9 @@ char buffer[BUFFER_SIZE];
 
 int main(); 
 std::string findMyIPaddress();
-std::vector<std::string> findAllRobots(std::string thisComputersIPaddress);
+// std::vector<std::string> findAllRobots(std::string thisComputersIPaddress);
+
+std::vector<robotIP> findAllRobots(std::string thisComputersIPaddress);
 std::string exec(const char* cmd);
 std::vector<std::string> split_string(const std::string& str, const std::string& delimiter);
 void setupOutgoingUDP();

@@ -19,7 +19,7 @@ int main()
     checkForUpdates();
 
     std::string thisComputersIPaddress = findMyIPaddress();
-    std::vector<std::string> IPaddressesOfTheRobots = findAllRobots(thisComputersIPaddress);
+    std::vector<robotIP> IPaddressesOfTheRobots = findAllRobots(thisComputersIPaddress);
 
     // std::cout << " Found robots on the following IP addresses: " << std::endl;
     // for(auto ip:IPaddressesOfTheRobots)
@@ -76,14 +76,14 @@ std::string findMyIPaddress()
 
 
 
-std::vector<std::string> findAllRobots(std::string thisComputersIPaddress)
+std::vector<robotIP> findAllRobots(std::string thisComputersIPaddress)
 { // Returns the IP address of all robots that it finds within the IP range hard coded into this function
   // TODO:  Make this more user-friendly by breaking the nmap call into several that check a smaller range
 
     // int startAddress = 1;
     // int endAddress = 255;
 
-    std::vector<std::string> returnVector;
+    std::vector<robotIP> returnVector;
 
     // // Modify the IP address so that it can be part of a range.
     // std::size_t trimPoint = thisComputersIPaddress.find_last_of(".");
@@ -177,7 +177,7 @@ std::vector<std::string> findAllRobots(std::string thisComputersIPaddress)
     unsigned int len;
 
 
-    for(unsigned int I = 0; I < IPaddresses.size() - 1; I++)  
+    for(unsigned int I = 0; I < IPaddresses.size(); I++)  
     {
       if(IPaddresses[I] != thisComputersIPaddress)
       {
@@ -188,13 +188,20 @@ std::vector<std::string> findAllRobots(std::string thisComputersIPaddress)
 
 
         bool receivedSomething = recvFromWithTimeout(incomingSockfd, &incomingAddr, buffer, BUFFER_SIZE, 500); // Try receiving for 500 milliseconds (1/2 second)
+
+        //std::cout << "Contacted " << IPaddresses[I] << " and received a response: " << receivedSomething << std::endl; 
+
         if(receivedSomething)
         {
           //std::cout << "It received something." <<  std::endl;
           if(buffer[0] == 1)
           {
-            std::cout << "Found a robot at " << IPaddresses[I] << std::endl;  
-            returnVector.push_back(IPaddresses[I]);
+            int serialNumber = buffer[1];
+            std::cout << "Found a robot at " << IPaddresses[I] <<  " with a serial number of " << serialNumber << std::endl;  
+            robotIP temp;
+            temp.IPaddress = IPaddresses[I];
+            temp.serialNumber = serialNumber;
+            returnVector.push_back(temp);
           }
         }
       }
