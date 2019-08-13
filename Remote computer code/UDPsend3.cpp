@@ -20,6 +20,14 @@ int main()
 
     std::string thisComputersIPaddress = findMyIPaddress();
     std::vector<std::string> IPaddressesOfTheRobots = findAllRobots(thisComputersIPaddress);
+
+    // std::cout << " Found robots on the following IP addresses: " << std::endl;
+    // for(auto ip:IPaddressesOfTheRobots)
+    // {
+    //   std::cout << ip << std::endl;
+    // }
+
+
       
     
     while(1)
@@ -31,6 +39,7 @@ int main()
         printf("message sent.\n"); 
         sleep(1);
     }
+
 } 
 
 
@@ -69,36 +78,84 @@ std::string findMyIPaddress()
 
 std::vector<std::string> findAllRobots(std::string thisComputersIPaddress)
 { // Returns the IP address of all robots that it finds within the IP range hard coded into this function
-    int startAddress = 2;
-    int endAddress = 255;
+  // TODO:  Make this more user-friendly by breaking the nmap call into several that check a smaller range
+
+    // int startAddress = 1;
+    // int endAddress = 255;
 
     std::vector<std::string> returnVector;
 
-    // Modify the IP address so that it can be part of a range.
-    std::size_t trimPoint = thisComputersIPaddress.find_last_of(".");
-    std::string IPrange = thisComputersIPaddress.substr(0,trimPoint);
-    IPrange.append(".");
-    IPrange.append(std::to_string(startAddress));
-    IPrange.append("-");
-    IPrange.append(std::to_string(endAddress));
+    // // Modify the IP address so that it can be part of a range.
+    // std::size_t trimPoint = thisComputersIPaddress.find_last_of(".");
+    // std::string IPrange = thisComputersIPaddress.substr(0,trimPoint);
+    // IPrange.append(".");
+    // IPrange.append(std::to_string(startAddress));
+    // IPrange.append("-");
+    // IPrange.append(std::to_string(endAddress));
 
-    //std::cout << "IPrange: " << IPrange << std::endl;
+    // //std::cout << "IPrange: " << IPrange << std::endl;
 
 
-    std::string commandString = "nmap -sP " + IPrange + " | grep for | awk '{print $NF}'";
+    // std::string commandString = "nmap -sP " + IPrange + " | grep for | awk '{print $NF}'";
 
-    std::cout << "command string: " << commandString << std::endl;  
+    // //std::cout << "command string: " << commandString << std::endl;  
+
 
 
     std::cout << "Searching for the robot on this network"  << std::endl;
-  //  nmap -sP 192.168.1.140-150 | grep for | awk '{print $5}'
+    std::vector<std::string> IPaddresses;
 
-    // std::string computersInRange = exec("nmap -sP 192.168.1.1-150 | grep for | awk '{print $5}'");
+    // Check for computers on the network in stages
+    for(int I = 0; I < 255; I += 64)
+    {
+      // Modify the IP address so that it can be part of a range.
+      std::size_t trimPoint = thisComputersIPaddress.find_last_of(".");
+      std::string IPrange = thisComputersIPaddress.substr(0,trimPoint);
+      IPrange.append(".");
+      IPrange.append(std::to_string(I));
+      IPrange.append("-");
+      IPrange.append(std::to_string(I+63));
 
-    std::string computersInRange = exec(commandString.c_str());
+      std::cout << "Searching IP range: " << IPrange << std::endl;
 
-    // Split the string into a vector of IP addresses
-    std::vector<std::string> IPaddresses = split_string(computersInRange, "\n");
+
+      std::string commandString = "nmap -sP " + IPrange + " | grep for | awk '{print $NF}'";
+
+      //std::cout << "command string: " << commandString << std::endl;  
+      std::string foundComputers = exec(commandString.c_str());
+
+      // Split the string into a vector of IP addresses
+      std::vector<std::string> temp = split_string(foundComputers, "\n");
+      for(auto a:temp)
+        IPaddresses.push_back(a);
+    }
+
+
+
+
+    // Erase any blank IP addresses
+    for(auto it = IPaddresses.begin(); it != IPaddresses.end(); it++)
+    {
+      std::string tempString = *it;
+      //std::cout << "Checking " << tempString << std::endl;
+      if (tempString.length() == 0)
+      {
+        IPaddresses.erase(it);
+        it--;
+      }
+    }
+
+
+
+    std::cout << "Contacting computers on this network to see if they are a robot." << std::endl; 
+
+    // std::cout << "Found the following IP addresses: " << std::endl;
+
+    // for(auto a:IPaddresses)
+    // {
+    //   std::cout << a << std::endl;
+    // }
+
 
 
     // Optionally strip away the parentheses
@@ -110,37 +167,21 @@ std::vector<std::string> findAllRobots(std::string thisComputersIPaddress)
         IPaddresses[I].erase(IPaddresses[I].length()-1,1);
     }
 
-    // Print out all of the IP addresses that were found
-    std::cout << "Found the following computers on the network: " << std::endl;
-    for(unsigned int I = 0; I < IPaddresses.size() - 1; I++)
-    {
-        std::cout << "#" << I << ": " << IPaddresses[I] << std::endl; 
-    }
+
+
 
     // Contact each IP address and see if it receives a reply from a robot
-
-
-
-
-    char test2[100];
+    char test2[20];
     int n = sprintf(test2, " %s", thisComputersIPaddress.c_str()); // n contains how many characters were printed out
     test2[0] = 1;
     unsigned int len;
 
 
-    // FOR TESTING ONLY!!!!!!!
-    // IPaddresses = {"192.168.1.22", ""};
-    // std::cout << "Size of IP addresses: " << IPaddresses.size() << std::endl;
-
-
-    // TODO:  There is a bug here that it will see the message to itself as a return hello packet.  
-
-    std::cout << "thisComputersIPaddress: #" << thisComputersIPaddress << "#" << std::endl;
     for(unsigned int I = 0; I < IPaddresses.size() - 1; I++)  
     {
       if(IPaddresses[I] != thisComputersIPaddress)
       {
-        std::cout << "Querying IP address #" << I << ": #" << IPaddresses[I] << "#" << std::endl;
+        //std::cout << "Querying IP address #" << I << ": " << IPaddresses[I] << "  " ;
         inet_aton(IPaddresses[I].c_str(), &outgoingAddr.sin_addr);
         //sendto(sockfd, (const char *)helloString.c_str(), helloString.length(), MSG_CONFIRM, (const struct sockaddr *) &servaddr,  sizeof(servaddr));
         sendto(outgoingSockfd, (const char *)test2, n, MSG_CONFIRM, (const struct sockaddr *) &outgoingAddr,  sizeof(outgoingAddr));
@@ -149,18 +190,13 @@ std::vector<std::string> findAllRobots(std::string thisComputersIPaddress)
         bool receivedSomething = recvFromWithTimeout(incomingSockfd, &incomingAddr, buffer, BUFFER_SIZE, 500); // Try receiving for 500 milliseconds (1/2 second)
         if(receivedSomething)
         {
-          std::cout << "It received something." <<  std::endl;
+          //std::cout << "It received something." <<  std::endl;
           if(buffer[0] == 1)
-            std::cout << "  It received a hello packet!" << std::endl;  
+          {
+            std::cout << "Found a robot at " << IPaddresses[I] << std::endl;  
+            returnVector.push_back(IPaddresses[I]);
+          }
         }
-        else
-        {
-          std::cout << "It didn't receive anything." <<  std::endl;
-        }
-      }
-      else
-      {
-        std::cout << "Skipping " << IPaddresses[I] << " because that is this computer." << std::endl;
       }
     }
     return returnVector;
@@ -174,22 +210,13 @@ std::vector<std::string> findAllRobots(std::string thisComputersIPaddress)
 
 
 bool recvFromWithTimeout(int sockFD, sockaddr_in* sockfrom, void *buffer, unsigned int bufferLength, int timeoutInMilliseconds)
-{ // This is my own take on receiving with a timeout
-
-
-
-  // Just wait for the required duration and then check to see if something is there. 
-  // std::cout << "Going to sleep...";
-  // //usleep(timeoutInMilliseconds * 1000);
-  // std::cout << "   Awake now!" << std::endl;
+{ // Checks to see if there is something on the provided socket for up to timeoutInMilliseconds milliseconds.  
 
   struct pollfd poll_list;
   poll_list.fd = sockFD;
   poll_list.events = POLLIN;  // POLLIN: There is data to receive 
 
-  int retVal = poll(&poll_list,1,timeoutInMilliseconds);  // Wait for 500ms to see if something happened
-
-  std::cout << "Retval: " << retVal << std::endl;
+  int retVal = poll(&poll_list,1,timeoutInMilliseconds);  
 
   unsigned int len;
   if(retVal == 1)
