@@ -1,0 +1,82 @@
+Partlist
+
+Exported from Propeller board rev 1.5.brd at 7/13/2021 8:17 PM
+
+EAGLE Version 9.2.2 Copyright (c) 1988-2018 Autodesk, Inc.
+
+Assembly variant: 
+
+Part                         Value                                            Package                              Library               Position (mil)        Orientation
+
+3.3V_LED                                                                      LED_SML1206                          arduino board rev 1.3 (164 433)             R90
+3V3_REGULATOR_FOR_PROPELLER  VOLTAGE_REGULATOR_3_TERMINALXP_POWER_VR05_SERIES VR05_SERIES_VREG                     Jack                  (1717.40157 1269.37008) R180
+5V_C_680PF                   680pf                                            JACK_0805                            arduino board rev 1.3 (3220 945)            R180
+5V_LED                                                                        LED_SML1206                          arduino board rev 1.3 (2595 945)            R0
+5V_LED_R1                    470                                              JACK_0805                            arduino board rev 1.3 (2820 945)            R0
+5V_LED_R2                    470                                              JACK_0805                            arduino board rev 1.3 (256 472)             R270
+5V_REGULATOR_PULLUP          10K                                              JACK_0805                            arduino board rev 1.3 (3370 1495)           R180
+5V_R_220                     220                                              JACK_0805                            arduino board rev 1.3 (3370 945)            R0
+BATTERY_VOLTAGE_DIVIDER_HIGH 11K                                              JACK_0805                            arduino board rev 1.3 (2047.42188 1209.86897) R90
+BATTERY_VOLTAGE_DIVIDER_LOW  1.6K                                             JACK_0805                            arduino board rev 1.3 (2046.38521 1378.2687) R90
+MOTOR_C_680PF                680pf                                            JACK_0805                            arduino board rev 1.3 (3214.46088 289.96518) R180
+MOTOR_ENABLE_MOSFET          JACK_MOSFET_N_CHANNELBSS138LCT-ND                JACK_SOT23                           arduino board rev 1.3 (3630.98425 571.22047) R0
+MOTOR_ENABLE_MOSFET1         JACK_MOSFET_N_CHANNELBSS138LCT-ND                JACK_SOT23                           arduino board rev 1.3 (3620 1270)           R0
+MOTOR_LED                                                                     LED_SML1206                          arduino board rev 1.3 (2595 295)            R0
+MOTOR_LED_R                  600                                              JACK_0805                            arduino board rev 1.3 (2820 295)            R0
+MOTOR_MOSFET_PULLDOWN        10K                                              JACK_0805                            arduino board rev 1.3 (3630.98425 453.11024) R180
+MOTOR_PULLUP                 10K                                              JACK_0805                            arduino board rev 1.3 (3358.70079 845.94488) R180
+MOTOR_PULLUP2                10K                                              JACK_0805                            arduino board rev 1.3 (3620 1145)           R180
+MOTOR_R_220                  220                                              JACK_0805                            arduino board rev 1.3 (3364.46088 289.96518) R0
+MOTOR_TRIM                   13.2K                                            JACK_0805                            arduino board rev 1.3 (3050 290)            R0
+R1                           240                                              805_SMD                              jack_custom           (250 314)             R90
+R25                          10k                                              805_SMD                              jack_custom           (1170 920)            R0
+RTRIM_5V                     16.2K                                            JACK_0805                            arduino board rev 1.3 (3051.48413 945)      R0
+U$1                          CONNECTOR_2_PINJST_PH_SERIES                     JST_2_PIN_PH_SERIES                  Jack                  (2160 340)            R180
+U$2                          JACK_SCREW_TERMINAL_2_CONDUCTORAMP-282837-2      JACK_AMP-282837-2                    arduino board rev 1.3 (3045 1720)           R0
+U$3                          POWER_CONTROLLER_LTC2954-2TSOT-23-8              TSOT-23-8                            Jack                  (2029 479)            R0
+U$4                          JACK_DC_TO_DC_VARIABLE_555-1172-1-ND             JACK_DC2DC_555-1172-1-ND             arduino board rev 1.3 (3520 1445)           R180
+U$5                          1uf                                              0805                                 Jack                  (2195 470)            R180
+U$6                          JACK_SCREW_TERMINAL_2_CONDUCTORAMP-282837-2      JACK_AMP-282837-2                    arduino board rev 1.3 (2345 1720)           R180
+U$7                          100K                                             0805                                 Jack                  (2145 620)            R90
+U$9                          100K                                             0805                                 Jack                  (2220 620)            R90
+U$10                         10K                                              0805                                 Jack                  (1937 634)            R180
+U$11                         1000pf                                           0805                                 Jack                  (1190 1240)           R270
+U$12                         MOSFET_P_CHANNELSI4431CDY                        SO8                                  Jack                  (2120 920)            R0
+U$13                         JACK_SCREW_TERMINAL_2_CONDUCTORAMP-282837-2      JACK_AMP-282837-2                    arduino board rev 1.3 (3720 1720)           R0
+U$14                         .1uf                                             0805                                 Jack                  (340 314)             R90
+U$15                         CRYSTAL8X4.5_PACKAGE                             CRYSTAL_NX8045GB-5MHZ-STD-CSF-3      Jack                  (800 500)             R270
+U$16                         .1uf                                             0805                                 Jack                  (360 1060)            R270
+U$17                         JACK_DC_TO_DC_VARIABLE_555-1172-1-ND             JACK_DC2DC_555-1172-1-ND             arduino board rev 1.3 (3520 795)            R180
+U$18                         .1uf                                             0805                                 Jack                  (1580 1420)           R0
+U$19                         TEST_POINT                                       KEYSTONE_ELECTRONICS_5118_TEST_POINT Jack                  (3670 920)            R0
+U$20                         LED0805                                          0805                                 Jack                  (340 474)             R270
+U$21                         HEADER_4_PIN_.1"                                 FOUR_.1"_HOLES                       Jack                  (390 740)             R90
+U$22                         HEADER_5X2                                       HEADER_5X2_.1"_SPACING               Jack                  (820 1720)            R90
+U$23                         CONNECTOR_4_PINJST_PH_SERIES                     JST_4_PIN_PH_SERIES                  Jack                  (1440 370)            R270
+U$24                         CONNECTOR_4_PINJST_PH_SERIES                     JST_4_PIN_PH_SERIES                  Jack                  (1230 370)            R270
+U$25                         CONNECTOR_4_PINJST_PH_SERIES                     JST_4_PIN_PH_SERIES                  Jack                  (1650 370)            R270
+U$26                         CONNECTOR_2_PINJST_.1"                           JST_2_PIN_.1"                        Jack                  (2160 180)            R180
+U$27                         10K                                              0805                                 Jack                  (1489 703)            R90
+U$28                         10uF                                             1210                                 Jack                  (2470 670)            R90
+U$29                         10uF                                             1210                                 Jack                  (2470 1320)           R90
+U$30                         10uf                                             1210                                 Jack                  (2470 1120)           R270
+U$31                         10uf                                             1210                                 Jack                  (2620 1320)           R90
+U$32                         10uf                                             1210                                 Jack                  (2470 470)            R270
+U$33                         10uf                                             1210                                 Jack                  (2620 1120)           R270
+U$34                         SPEAKERGT-0950RP3                                AUDIO_TRANSDUCER_GT-0950RP3          Jack                  (1720 800)            R90
+U$35                         DIODESOD-23/SC-76                                SOD-323/SC-76                        Jack                  (1490 870)            R90
+U$36                         TRANSISTOR_NPNMMBT3904                           SOT23                                Jack                  (1340 710)            R180
+U$37                         200                                              0805                                 Jack                  (1340 810)            R0
+U$38                         CONNECTOR_3_PIN.1"SPACING                        THREE_.1"_HOLES                      Jack                  (3610 170)            R180
+U$40                         10uf                                             1210                                 Jack                  (2620 470)            R270
+U$41                         10uf                                             1210                                 Jack                  (2620 670)            R90
+U$42                         1000pf                                           0805                                 Jack                  (1265 1240)           R90
+U$43                         150K                                             0805                                 Jack                  (1120 1320)           R90
+U$44                         100K                                             0805                                 Jack                  (1044 1320)           R270
+U$45                         CONNECTOR_4_PINJST_PH_SERIES                     JST_4_PIN_PH_SERIES                  Jack                  (1020 370)            R270
+U$46                         CONNECTOR_4_PINJST_PH_SERIES                     JST_4_PIN_PH_SERIES                  Jack                  (1670 1670)           R90
+U$47                         CONNECTOR_4_PINJST_PH_SERIES                     JST_4_PIN_PH_SERIES                  Jack                  (570 370)             R270
+U$48                         PROPELLER_PROGRAMMING_HEADERHOLES                FOUR_.1"HOLES                        Jack                  (1370 1070)           R270
+U$49                         CONNECTOR_4_PINJST_PH_SERIES                     JST_4_PIN_PH_SERIES                  Jack                  (1900 1670)           R90
+U1                           PARALLAX_PROPELLER                               44LQFP                               jack_custom           (770 1070)            R270
+U2                           EEPROM_24XX256                                   8_MSOP                               jack_custom           (1170 770)            R0
