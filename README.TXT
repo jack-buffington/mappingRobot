@@ -1,4 +1,4 @@
-This readme was last updated on August 8th 2019
+This readme was last updated on September 20 2021
 
 This repository will contain all of the files necessary to make a mapping robot that can map its 
 environment using a 2D lidar-like sensor.  At the time of writing this README, the project is 
@@ -18,3 +18,7 @@ the most up-to-date map.  The third is a microcontroller that handles low-level 
 reading sensors, and controllng the power to the motors, CPU, and itself. 
 
 Power is supplied to the robot from an off-the-shelf battery pack for Dewalt cordless tools.  
+
+It its current state, the MCU code is fairly well tested.  The CPU code is also pretty well tested but is not at 
+all in its final form.   The CPU software currently tests much of the functionality of the MCU and is there to 
+help organize my thoughts and prepare for adding it to a ROS node.  
