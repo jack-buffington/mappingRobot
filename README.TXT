@@ -1,4 +1,4 @@
-This readme was last updated on September 20 2021
+This readme was last updated on October 17 2021
 
 This repository will eventually contain all of the files necessary to make a mapping robot that can map its 
 environment using a 2D lidar-like sensor.  At the time of writing this README, the project is 
@@ -7,7 +7,7 @@ ongoing.  Eventual goals of this project are:
 * Have the robot autonomously map its environment using a RPlidar A2 module.  
 * Know when it is done mapping its environment. 
 * Do so using ROS.  
-* Run exclusively my own code (except for ROS).
+* Run exclusively my own code (except for ROS and maybe reading the RPlidar).
 * Have the capability to connect to the robot using a remote computer which can view the current state of the
 map as well as to take direct control of the robot.  
 
@@ -21,5 +21,7 @@ Power is supplied to the robot from an off-the-shelf battery pack for Dewalt cor
 
 It its current state, the MCU code is fairly well tested though doesn't have all of the features that I would 
 eventually like for it to have such as to read a time of flight sensor to know if it is about to go over a step.
-The CPU code is also pretty well tested but is not at all in its final form.   The CPU software currently tests
-much of the functionality of the MCU and is there to help organize my thoughts and prepare for adding it to a ROS node.  
+The CPU code is starting to take shape.  I currently have a ROS node that communicates with the MCU.  It doesn't do
+anything interesting.   It is just a bridge between ROS and the serial commands that the MCU uses.  It is fully 
+functional though and sends commands to the MCU when it receives information on the appropriate topics.   It also
+publishes on a couple of topics when it receives messages from the MCU.  
