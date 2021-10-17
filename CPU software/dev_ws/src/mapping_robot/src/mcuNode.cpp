@@ -17,10 +17,7 @@ ros2 topic pub -1 /beep std_msgs/msg/String "data: this is a test"
 
 
 
-class MCUnode : public rclcpp::Node
-{
-public:
-  MCUnode() : Node("mcu_node")
+  MCUnode::MCUnode() : Node("mcu_node")
   {
     displayMessageSubscription = this->create_subscription<std_msgs::msg::String>("displayMessage", 10, std::bind(&MCUnode::displayMessageCallback, this, _1));
     driveMotorsSubscription = this->create_subscription<std_msgs::msg::String>("driveMotors", 10, std::bind(&MCUnode::driveMotorsCallback, this, _1));
@@ -31,8 +28,8 @@ public:
     buttonPublisher = this->create_publisher<std_msgs::msg::String>("buttonPress", 10);
   }
 
-private:
-  void displayMessageCallback(const std_msgs::msg::String::SharedPtr msg) const
+
+  void MCUnode::displayMessageCallback(const std_msgs::msg::String::SharedPtr msg) const
   { // to test:  ros2 topic pub -1 /displayMessage std_msgs/msg/String "data: 2~0~testing..."
     RCLCPP_INFO(this->get_logger(), "displayMessage: '%s'", msg->data.c_str());
 
@@ -45,7 +42,7 @@ private:
 
 
 
-  void beepCallback(const std_msgs::msg::String::SharedPtr msg) const        
+  void MCUnode::beepCallback(const std_msgs::msg::String::SharedPtr msg) const        
   { // To test:  ros2 topic pub -1 /beep std_msgs/msg/String "data: 0"
     RCLCPP_INFO(this->get_logger(), "beep: '%s'", msg->data.c_str());
     int whichBeep = atoi(msg->data.c_str());
@@ -54,7 +51,7 @@ private:
 
 
 
-  void driveMotorsCallback(const std_msgs::msg::String::SharedPtr msg) const
+  void MCUnode::driveMotorsCallback(const std_msgs::msg::String::SharedPtr msg) const
   { // to test:  ros2 topic pub -1 /driveMotors std_msgs/msg/String "data: 1.0,1.0"
     // The values are in meters per second.
     RCLCPP_INFO(this->get_logger(), "driveMotors: '%s'", msg->data.c_str());
@@ -63,11 +60,10 @@ private:
     float leftMotor = atof(splits[0].c_str());
     float rightMotor = atof(splits[1].c_str());
     driveMotors(leftMotor, rightMotor);
-
-
   }
 
-  void cpuReadyCallback(const std_msgs::msg::String::SharedPtr msg) const
+
+  void MCUnode::cpuReadyCallback(const std_msgs::msg::String::SharedPtr msg) const
   {
     RCLCPP_INFO(this->get_logger(), "cpuReady: '%s'", msg->data.c_str());
   }
@@ -75,7 +71,7 @@ private:
 
 
 
-  void serialTimerCallback()
+  void MCUnode::serialTimerCallback()
   {
     // This callback happens 20 times per second.   
     // This implements a state machine that is used to keep track of where it was in a serial message.
@@ -152,18 +148,6 @@ private:
       } // End of the switch statement - No bracket is missing above.  
     }
   }
-
-
-  rclcpp::Subscription<std_msgs::msg::String>::SharedPtr displayMessageSubscription;
-  rclcpp::Subscription<std_msgs::msg::String>::SharedPtr beepSubscription;
-  rclcpp::Subscription<std_msgs::msg::String>::SharedPtr driveMotorsSubscription;
-  rclcpp::Subscription<std_msgs::msg::String>::SharedPtr cpuReadySubscription;
-  rclcpp::TimerBase::SharedPtr timer_;
-  rclcpp::Publisher<std_msgs::msg::String>::SharedPtr voltagePublisher;
-  rclcpp::Publisher<std_msgs::msg::String>::SharedPtr buttonPublisher;
-
-}; // End of the class
-
 
 
 
