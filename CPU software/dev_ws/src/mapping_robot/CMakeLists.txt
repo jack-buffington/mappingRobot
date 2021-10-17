@@ -1,0 +1,32 @@
+cmake_minimum_required(VERSION 3.5)
+project(mapping_robot)
+
+# Default to C++14
+if(NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 14)
+endif()
+
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
+
+find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(std_msgs REQUIRED)
+
+
+include_directories(include)
+
+
+# In this section, different nodes are created.  To add a new node, add a pair of lines like below.  
+# Note how the add_executable line includes both the main source code as well as any other .cpp files that are needed.
+
+add_executable(mcuNode src/mcuNode.cpp src/commonlyUsedFunctions.cpp src/serialPortStuff.cpp)
+ament_target_dependencies(mcuNode rclcpp std_msgs)
+
+install(TARGETS
+# include all nodes here.  Each one should be on a separate line.
+  mcuNode
+  DESTINATION lib/${PROJECT_NAME})
+
+ament_package()
