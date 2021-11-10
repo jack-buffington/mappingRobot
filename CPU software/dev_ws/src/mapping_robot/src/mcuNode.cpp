@@ -16,13 +16,13 @@ ros2 topic pub -1 /beep std_msgs/msg/String "data: this is a test"
 
   MCUnode::MCUnode() : Node("mcu_node")
   {
-    displayMessageSubscription = this->create_subscription<std_msgs::msg::String>("displayMessage", 10, std::bind(&MCUnode::displayMessageCallback, this, _1));
-    driveMotorsSubscription = this->create_subscription<std_msgs::msg::String>("driveMotors", 10, std::bind(&MCUnode::driveMotorsCallback, this, _1));
-    beepSubscription = this->create_subscription<std_msgs::msg::String>("beep", 10, std::bind(&MCUnode::beepCallback, this, _1));
-    cpuReadySubscription = this->create_subscription<std_msgs::msg::String>("cpuReady", 10, std::bind(&MCUnode::cpuReadyCallback, this, _1));
+    displayMessageSubscription = this->create_subscription<std_msgs::msg::String>("displayMessage", MESSAGE_QUEUE_DEPTH, std::bind(&MCUnode::displayMessageCallback, this, _1));
+    driveMotorsSubscription = this->create_subscription<std_msgs::msg::String>("driveMotors", MESSAGE_QUEUE_DEPTH, std::bind(&MCUnode::driveMotorsCallback, this, _1));
+    beepSubscription = this->create_subscription<std_msgs::msg::String>("beep", MESSAGE_QUEUE_DEPTH, std::bind(&MCUnode::beepCallback, this, _1));
+    cpuReadySubscription = this->create_subscription<std_msgs::msg::String>("cpuReady", MESSAGE_QUEUE_DEPTHstd::bind(&MCUnode::cpuReadyCallback, this, _1));
     timer_ = this->create_wall_timer(std::chrono::milliseconds(50), std::bind(&MCUnode::serialTimerCallback, this));
-    voltagePublisher = this->create_publisher<std_msgs::msg::String>("batteryVoltage", 10);
-    buttonPublisher = this->create_publisher<std_msgs::msg::String>("buttonPress", 10);
+    voltagePublisher = this->create_publisher<std_msgs::msg::String>("batteryVoltage", MESSAGE_QUEUE_DEPTH);
+    buttonPublisher = this->create_publisher<std_msgs::msg::String>("buttonPress", MESSAGE_QUEUE_DEPTH);
   }
 
 
