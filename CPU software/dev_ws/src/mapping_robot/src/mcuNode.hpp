@@ -24,7 +24,6 @@
 class MCUnode : public rclcpp::Node
 {
 public:
-  //MCUnode() : Node("mcu_node");
   MCUnode();
 
 private:
