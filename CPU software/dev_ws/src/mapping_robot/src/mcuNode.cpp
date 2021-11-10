@@ -16,11 +16,16 @@ ros2 topic pub -1 /beep std_msgs/msg/String "data: this is a test"
 
   MCUnode::MCUnode() : Node("mcu_node")
   {
+    // Callbacks for things that go to the MCU
     displayMessageSubscription = this->create_subscription<std_msgs::msg::String>("displayMessage", MESSAGE_QUEUE_DEPTH, std::bind(&MCUnode::displayMessageCallback, this, _1));
     driveMotorsSubscription = this->create_subscription<std_msgs::msg::String>("driveMotors", MESSAGE_QUEUE_DEPTH, std::bind(&MCUnode::driveMotorsCallback, this, _1));
     beepSubscription = this->create_subscription<std_msgs::msg::String>("beep", MESSAGE_QUEUE_DEPTH, std::bind(&MCUnode::beepCallback, this, _1));
     cpuReadySubscription = this->create_subscription<std_msgs::msg::String>("cpuReady", MESSAGE_QUEUE_DEPTH, std::bind(&MCUnode::cpuReadyCallback, this, _1));
+    
+    // Callback for monitoring received serial data
     timer_ = this->create_wall_timer(std::chrono::milliseconds(50), std::bind(&MCUnode::serialTimerCallback, this));
+    
+    // Publishers that are used when a message is received from the MCU
     voltagePublisher = this->create_publisher<std_msgs::msg::String>("batteryVoltage", MESSAGE_QUEUE_DEPTH);
     buttonPublisher = this->create_publisher<std_msgs::msg::String>("buttonPress", MESSAGE_QUEUE_DEPTH);
   }
