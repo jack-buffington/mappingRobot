@@ -11,8 +11,8 @@
 	#include "commonlyUsedFunctions.hpp"
 
 
-	#define TICKS_PER_METER    2000   // This is just a guess at this point.
-
+	#define TICKS_PER_METER    	2000   // This is just a guess at this point.
+	#define MESSAGE_QUEUE_DEPTH	10
 
 	void beep(int whichBeep);
 	void sendTextToDisplay(int row, int col, std::string theText);
