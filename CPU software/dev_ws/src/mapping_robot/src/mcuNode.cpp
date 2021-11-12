@@ -4,8 +4,7 @@ To get this to run, type the following from inside of the dev_ws directory:
 ros2 run mapping_robot mcuNode
 
 
-To publish on a topic from the command line:
-ros2 topic pub -1 /beep std_msgs/msg/String "data: this is a test"
+"
 
 */
 
