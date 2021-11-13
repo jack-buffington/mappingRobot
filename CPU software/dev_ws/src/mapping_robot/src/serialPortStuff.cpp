@@ -1,9 +1,18 @@
  /*	This file contains functions that relate to serial ports in a general sense. 
- 
+	
+	The code that deals with opening/closing/reading of a serial port is lightly 
+	modified from code that was found on the internet.
 
+	The code that deals with sending and receiving messages was written by me.  
+	
+	The format of a message is:  
 	0x55  <message length> <message type> <optional additional bytes> <checksum>
-	Written by Jack Buffington 
-	Last updated October 2021
+
+	Note that if you are finding this in an online repository, not all of this code 
+	is used in all of my programs.  I keep this code as a general-purpose library but
+	may only be using parts of it. 
+	 
+	Last updated November 2021
 
 
 */
@@ -18,7 +27,6 @@ int serialPort;
 bool setupSerialPort(char *thePort, bool lockIt)
 { // This sets up the serial port at 115200 baud 8N1
 	// If lockIt is true then it makes it so that this program has exclusive access to the serial port.
-	//std::cout << __func__ << " - Connecting to " << thePort << "\r\n";
 
 	serialPort = open(thePort, O_RDWR);
 
@@ -26,11 +34,9 @@ bool setupSerialPort(char *thePort, bool lockIt)
 	{
 		std::string portString(thePort);
 		std::cout << "Failed to connect to " << portString << std::endl;
-		//std::cout << " - Failed!\n";
 		std::string errorString(std::strerror(errno));
 		std::cout << "Reason: " << errorString << std::endl;
-		//perror ("Reason");
-		//std::cout << "\r\n";
+
 		return false;
 	}
 
@@ -91,9 +97,6 @@ bool setupSerialPort(char *thePort, bool lockIt)
 	    return false;
 	}
 
-	//std::cout << "Successfully connected to " << thePort << "\r\n";
-	//std::cout << "File descriptor: " << serialPort << "\r\n";
-
 	if(lockIt)
 	{
 		ioctl(serialPort, TIOCEXCL);
@@ -117,17 +120,6 @@ bool sendCharacterToSerialPort(char theChar)
 bool sendBufferToSerialPort(uint8_t* msg, int bufferSize)
 {// Sends a buffer to the serial port.  Returns true if successful.
 
-	std::cout << __func__ << std::endl;
-	
-	// For debugging purposes
-	std::cout << "Sending this message: ";
-	for(int I = 0; I < bufferSize; ++I)
-	{
-		std::cout << +msg[I] << ", ";
-	}
-
-
-
 	if(write(serialPort, msg, bufferSize) == -1)
 	{
 		return false;
@@ -139,8 +131,6 @@ bool sendBufferToSerialPort(uint8_t* msg, int bufferSize)
 
 bool readCharFromSerialPort(char *theChar, float timeoutInSeconds)
 { 	// Attempts to read a character from the serial port.  Returns true if this happens before the timeout.
-	//std::cout << __func__ << " - starting\n";
-
 
 	const clock_t startTime = clock();
 
@@ -154,16 +144,12 @@ bool readCharFromSerialPort(char *theChar, float timeoutInSeconds)
 		if(bytesAvailable)
 		{
 			read(serialPort, theChar, 1);
-			//elapsedTime = float(clock () - startTime) /  CLOCKS_PER_SEC;
-			//std::cout << "Took " << elapsedTime << " seconds to read the byte.\n";
-			//std::cout << __func__ << " - done\n";
 			return true;
 		}
 
 		elapsedTime = float(clock () - startTime) /  CLOCKS_PER_SEC;
 		if(elapsedTime > timeoutInSeconds) // Give it time to respond then move on.  
 		{
-			//std::cout << __func__ << " - timeout\n";
 			return false;
 		}
 	} // Done waiting for a byte to show up.
@@ -177,10 +163,7 @@ bool getMessageFromSerialPort(MCUmessage *theMessage)
 	// The message format is 0x55 <# of bytes in the message past this one> <variable # of message bytes> <checksum>
 	// Returns true if it found a message within a certain timeout duration.
 
-
-
 	char theChar; 
-	//std::cout << __func__ << " - start\n";
 
 	const float initialWaitTimeInSeconds = 0.1; // was 0.05;
 
@@ -208,8 +191,6 @@ bool getMessageFromSerialPort(MCUmessage *theMessage)
 	}
 
 	uint8_t packetLength = theChar;
-	
-	//std::cout << "Length of the packet: " << +packetLength << std::endl;
 
 	theMessage->bytesInMessage = theChar;
 
@@ -222,17 +203,12 @@ bool getMessageFromSerialPort(MCUmessage *theMessage)
 
 	for(size_t I = 0; I < packetLength; ++I)
 	{
-		//std::cout << "Reading a character: ";
 		if(!readCharFromSerialPort(&theChar, 0.005))
 		{
 			return false;
 		}
-		//std::cout << +theChar << std::endl;
 		messageBuffer.push_back(theChar);
 	}
-
-
-	//std::cout << "Checking to see if the message is too big.\n";
 
 
 	// return false if this message was too big for the buffer.
@@ -245,7 +221,6 @@ bool getMessageFromSerialPort(MCUmessage *theMessage)
 	char buffer[32];
 	char *bufferPtr = buffer;
 
-	//std::cout << "Copying into a buffer to check the checksum.\n";
 
 	// Copy the temporary buffer into another that works for checking the checksum
 	for(uint8_t I = 0; I < messageBuffer.size(); ++I)
@@ -260,8 +235,6 @@ bool getMessageFromSerialPort(MCUmessage *theMessage)
 		std::cout << "Checksum failed.\n";
 		return false;
 	}
-
-	//std::cout << "Checksum passed\n";
 
 	for(uint8_t I = 0; I < messageBuffer.size() - 1; ++I) // -1 because I don't want the checksum
 	{
@@ -295,13 +268,9 @@ bool checkChecksum(unsigned char *message, uint8_t messageSize)
 	for(size_t  I = 0; I < messageSize; ++I)
 	{
 		checksum ^= message[I];
-		//std::cout << +message[I] << "  " << message[I] << "\n";
 	}
-	//std::cout << "Checksum:" << +checksum << "\n";
-	//std::cout << "Message's checksum:" << +message[messageSize-1] << "\n";
 
 	std::cout << "Computed checksum: " << +checksum << std::endl;
-
 	return checksum == 0;
 }
 

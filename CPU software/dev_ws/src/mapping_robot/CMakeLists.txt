@@ -21,12 +21,16 @@ include_directories(include)
 # In this section, different nodes are created.  To add a new node, add a pair of lines like below.  
 # Note how the add_executable line includes both the main source code as well as any other .cpp files that are needed.
 
-add_executable(mcuNode src/mcuNode.cpp src/commonlyUsedFunctions.cpp src/serialPortStuff.cpp)
+add_executable(mcuNode src/commonlyUsedFunctions.cpp src/serialPortStuff.cpp src/mcuNode.cpp)
+add_executable(manualDrivingNode  src/commonlyUsedFunctions.cpp src/manualDrivingNode.cpp)
+
 ament_target_dependencies(mcuNode rclcpp std_msgs)
+ament_target_dependencies(manualDrivingNode rclcpp std_msgs)
 
 install(TARGETS
 # include all nodes here.  Each one should be on a separate line.
   mcuNode
+  manualDrivingNode
   DESTINATION lib/${PROJECT_NAME})
 
 ament_package()
