@@ -19,7 +19,7 @@ ros2 run mapping_robot manualDrivingNode
     timer_ = this->create_wall_timer(std::chrono::milliseconds(50), std::bind(&manualDrivingNode::keyboardCallback, this));
 
     // Publisher so that I can send out motor messages
-    motorPublisher = this->create_publisher<std_msgs::msg::String>("driaveMotors", MESSAGE_QUEUE_DEPTH);
+    motorPublisher = this->create_publisher<std_msgs::msg::String>("driveMotors", MESSAGE_QUEUE_DEPTH);
   }
 
 
@@ -31,11 +31,11 @@ ros2 run mapping_robot manualDrivingNode
     char c;
     static char lastC = 0;
     static bool stopSent = true;
-    static int speed = 0.1;
+    static float speed = 0.1;
     float leftMotor = 0;
     float rightMotor = 0;
 
-    if(kbhit()) // If a key has been pressed
+    while(kbhit()) // If a key has been pressed
     {
       startTiming();
       c = getchar();
@@ -48,24 +48,35 @@ ros2 run mapping_robot manualDrivingNode
             std::cout << "left turn\n";
             leftMotor = -speed;
             rightMotor = speed;
+            std::cout << "Motors: " << leftMotor << ", " << rightMotor  << std::endl;
             publishMotorMessage(leftMotor, rightMotor);
             break;
           case('w'):
             std::cout << "forward\n";
             leftMotor = speed;
             rightMotor = speed;
+            std::cout << "Motors: " << leftMotor << ", " << rightMotor  << std::endl;
             publishMotorMessage(leftMotor, rightMotor);
             break;
           case('d'):
             std::cout << "right turn\n";
             leftMotor = speed;
             rightMotor =- speed;
+            std::cout << "Motors: " << leftMotor << ", " << rightMotor  << std::endl;
             publishMotorMessage(leftMotor, rightMotor);
             break;
           case('s'):
             std::cout << "backward\n";
             leftMotor = -speed;
             rightMotor = -speed;
+            std::cout << "Motors: " << leftMotor << ", " << rightMotor  << std::endl;
+            publishMotorMessage(leftMotor, rightMotor);
+            break;
+          case(' '):
+            std::cout << "stop\n";
+            leftMotor = 0;
+            rightMotor = 0;
+            std::cout << "Motors: " << leftMotor << ", " << rightMotor  << std::endl;
             publishMotorMessage(leftMotor, rightMotor);
             break;
 
@@ -92,13 +103,15 @@ ros2 run mapping_robot manualDrivingNode
         
       }
       lastC = c;
-    }
+    } // end of while statement
+    
     //std::cout << "time:" << getElapsedTimeInMilliseconds() << std::endl << std::flush;
-    usleep(10000); // 10 ms
+   //usleep(10000); // 10 ms
     if(getElapsedTimeInMilliseconds() > KEY_DELAY && stopSent == false)
     {
       stopSent = true;
       std::cout << "STOP\n";
+      publishMotorMessage(0,0);
       lastC = 0;
       leftMotor = 0;
       rightMotor = 0;
