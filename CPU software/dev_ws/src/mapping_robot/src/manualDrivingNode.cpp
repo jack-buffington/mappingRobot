@@ -82,21 +82,38 @@ ros2 run mapping_robot manualDrivingNode
 
           // The speeds are meant to change things between directional button pushes, not when one is being actively being pushed.
           case('1'):
-            std::cout << "Speed 1\n";
+            std::cout << "Speed 0.1\n";
             speed = 0.1;
             break;
           case('2'):
-            std::cout << "Speed 2\n";
+            std::cout << "Speed 0.25\n";
             speed = 0.25;
             break;
           case('3'):
-            std::cout << "Speed 3\n";
+            std::cout << "Speed 0.5\n";
             speed = 0.5;
             break;
           case('4'):
-            std::cout << "Speed 4\n";
+            std::cout << "Speed 1.0\n";
             speed = 1.0;
             break;
+          case('5'):
+            std::cout << "Speed 1.5\n";
+            speed = 1.5;
+            break;
+          case('6'):
+            std::cout << "Speed 2.0\n";
+            speed = 2.0;
+            break;
+          case('7'):
+            std::cout << "Speed 3.0\n";
+            speed = 3.0;
+            break;
+          case('8'):
+            std::cout << "Speed 4.0\n";
+            speed = 4.0;
+            break;
+
 
 
         }
@@ -104,7 +121,7 @@ ros2 run mapping_robot manualDrivingNode
       }
       lastC = c;
     } // end of while statement
-    
+
     //std::cout << "time:" << getElapsedTimeInMilliseconds() << std::endl << std::flush;
    //usleep(10000); // 10 ms
     if(getElapsedTimeInMilliseconds() > KEY_DELAY && stopSent == false)
