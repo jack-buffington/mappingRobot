@@ -1,7 +1,7 @@
 /*
 To get this to run, type the following from inside of the dev_ws directory:
 . install/setup.bash
-ros2 run mapping_robot manualDrivingNode
+  
 
 
 "
@@ -19,7 +19,7 @@ ros2 run mapping_robot manualDrivingNode
     timer_ = this->create_wall_timer(std::chrono::milliseconds(50), std::bind(&manualDrivingNode::keyboardCallback, this));
 
     // Publisher so that I can send out motor messages
-    motorPublisher = this->create_publisher<std_msgs::msg::String>("driveMotors", MESSAGE_QUEUE_DEPTH);
+    motorPublisher = this->create_publisher<std_msgs::msg::Float32MultiArray>("driveMotors", MESSAGE_QUEUE_DEPTH);
   }
 
 
@@ -139,9 +139,10 @@ ros2 run mapping_robot manualDrivingNode
 
 void manualDrivingNode::publishMotorMessage(float leftMotor, float rightMotor)
 {
-    auto message = std_msgs::msg::String();
-    message.data = std::to_string(leftMotor) + "," + std::to_string(rightMotor);
-    motorPublisher->publish(message);
+    std_msgs::msg::Float32MultiArray msg;
+    msg.data.push_back(leftMotor);
+    msg.data.push_back(rightMotor);
+    motorPublisher->publish(msg);
 }
 
 
@@ -151,7 +152,7 @@ void manualDrivingNode::publishMotorMessage(float leftMotor, float rightMotor)
 
 int main(int argc, char * argv[])
 {
-  std::cout << "version 001\n";
+  std::cout << "Version 002 - Uses the Float32MultiArray instead of a string.\n";
 
   turnOffLocalEcho();
   startTiming();

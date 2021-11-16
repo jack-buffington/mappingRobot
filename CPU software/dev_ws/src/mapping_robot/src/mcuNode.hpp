@@ -9,6 +9,7 @@
 	#include "std_msgs/msg/string.hpp"
 	#include "serialPortStuff.hpp"
 	#include "commonlyUsedFunctions.hpp"
+	#include "std_msgs/msg/float32_multi_array.hpp"
 
 
 	#define TICKS_PER_METER    	2000   // This is just a guess at this point.
@@ -29,16 +30,18 @@ public:
 private:
   void displayMessageCallback(const std_msgs::msg::String::SharedPtr msg) const;
   void beepCallback(const std_msgs::msg::String::SharedPtr msg) const;        
-  void driveMotorsCallback(const std_msgs::msg::String::SharedPtr msg) const;
+  void driveMotorsCallback(const std_msgs::msg::Float32MultiArray::SharedPtr msg) const;
   void cpuReadyCallback(const std_msgs::msg::String::SharedPtr msg) const;
   void serialTimerCallback();
 
 
   rclcpp::Subscription<std_msgs::msg::String>::SharedPtr displayMessageSubscription;
   rclcpp::Subscription<std_msgs::msg::String>::SharedPtr beepSubscription;
-  rclcpp::Subscription<std_msgs::msg::String>::SharedPtr driveMotorsSubscription;
+  rclcpp::Subscription<std_msgs::msg::Float32MultiArray>::SharedPtr driveMotorsSubscription;
   rclcpp::Subscription<std_msgs::msg::String>::SharedPtr cpuReadySubscription;
+
   rclcpp::TimerBase::SharedPtr timer_;
+  
   rclcpp::Publisher<std_msgs::msg::String>::SharedPtr voltagePublisher;
   rclcpp::Publisher<std_msgs::msg::String>::SharedPtr buttonPublisher;
 }; // End of the class

@@ -10,6 +10,8 @@
 	#include "serialPortStuff.hpp"
 	#include "commonlyUsedFunctions.hpp"
 
+	#include "std_msgs/msg/float32_multi_array.hpp"
+
 
 
 	#define KEY_DELAY 				250
@@ -28,7 +30,8 @@ private:
   void keyboardCallback();
   void publishMotorMessage(float leftMotor, float rightMotor);
 
-  rclcpp::Publisher<std_msgs::msg::String>::SharedPtr motorPublisher;
+  rclcpp::Publisher<std_msgs::msg::Float32MultiArray>::SharedPtr motorPublisher; 
+  
   rclcpp::TimerBase::SharedPtr timer_;
 
 }; // End of the class

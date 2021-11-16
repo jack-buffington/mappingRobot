@@ -17,7 +17,7 @@ ros2 run mapping_robot mcuNode
   {
     // Callbacks for things that go to the MCU
     displayMessageSubscription = this->create_subscription<std_msgs::msg::String>("displayMessage", MESSAGE_QUEUE_DEPTH, std::bind(&MCUnode::displayMessageCallback, this, _1));
-    driveMotorsSubscription = this->create_subscription<std_msgs::msg::String>("driveMotors", MESSAGE_QUEUE_DEPTH, std::bind(&MCUnode::driveMotorsCallback, this, _1));
+    driveMotorsSubscription = this->create_subscription<std_msgs::msg::Float32MultiArray>("driveMotors", MESSAGE_QUEUE_DEPTH, std::bind(&MCUnode::driveMotorsCallback, this, _1));
     beepSubscription = this->create_subscription<std_msgs::msg::String>("beep", MESSAGE_QUEUE_DEPTH, std::bind(&MCUnode::beepCallback, this, _1));
     cpuReadySubscription = this->create_subscription<std_msgs::msg::String>("cpuReady", MESSAGE_QUEUE_DEPTH, std::bind(&MCUnode::cpuReadyCallback, this, _1));
 
@@ -52,15 +52,14 @@ ros2 run mapping_robot mcuNode
 
 
 
-  void MCUnode::driveMotorsCallback(const std_msgs::msg::String::SharedPtr msg) const
-  { // to test:  ros2 topic pub -1 /driveMotors std_msgs/msg/String "data: 1.0,1.0"
-    // The values are in meters per second.
-    RCLCPP_INFO(this->get_logger(), "driveMotors: '%s'", msg->data.c_str());
 
-    std::vector<std::string> splits = splitString(msg->data, ",");
-    float leftMotor = atof(splits[0].c_str());
-    float rightMotor = atof(splits[1].c_str());
-    driveMotors(leftMotor, rightMotor);
+
+
+  void MCUnode::driveMotorsCallback(const std_msgs::msg::Float32MultiArray::SharedPtr msg) const
+  { // to test:  THIS ISN'T CORRECT -> ros2 topic pub -1 /driveMotors2 std_msgs/msg/Float32MultiArray "data: 1.0,1.0"  TODO:  How do I test this manually?
+    // The values are in meters per second.
+
+    driveMotors(msg->data[0], msg->data[1]);
   }
 
 
@@ -90,7 +89,6 @@ ros2 run mapping_robot mcuNode
     while(readCharFromSerialPort(&theChar, 0.001)) // time out in 1 ms.
     {
       // Show the bytes received for debug purposes
-      //std::cout << +theChar << ", " << std::flush;
       switch(state)
       {
         case 0: // Start byte
@@ -160,7 +158,7 @@ ros2 run mapping_robot mcuNode
 
 int main(int argc, char * argv[])
 {
-  std::cout << "version 018\n";
+  std::cout << "version 021\n";
   std::string portString = "/dev/serial1";
   if(setupSerialPort((char*)portString.c_str(), true))
   {
