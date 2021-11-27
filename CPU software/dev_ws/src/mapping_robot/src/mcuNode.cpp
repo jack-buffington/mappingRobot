@@ -18,7 +18,8 @@ ros2 run mapping_robot mcuNode
     // Callbacks for things that go to the MCU
     displayMessageSubscription = this->create_subscription<std_msgs::msg::String>("displayMessage", MESSAGE_QUEUE_DEPTH, std::bind(&MCUnode::displayMessageCallback, this, _1));
     driveMotorsSubscription = this->create_subscription<std_msgs::msg::Float32MultiArray>("driveMotors", MESSAGE_QUEUE_DEPTH, std::bind(&MCUnode::driveMotorsCallback, this, _1));
-    beepSubscription = this->create_subscription<std_msgs::msg::String>("beep", MESSAGE_QUEUE_DEPTH, std::bind(&MCUnode::beepCallback, this, _1));
+    //beepSubscription = this->create_subscription<std_msgs::msg::String>("beep", MESSAGE_QUEUE_DEPTH, std::bind(&MCUnode::beepCallback, this, _1));
+    //beepSubscription = this->create_subscription<mapping_robot_interfaces::msg::BeepType>("beep", MESSAGE_QUEUE_DEPTH, std::bind(&MCUnode::beepCallback, this, _1));
     cpuReadySubscription = this->create_subscription<std_msgs::msg::String>("cpuReady", MESSAGE_QUEUE_DEPTH, std::bind(&MCUnode::cpuReadyCallback, this, _1));
 
     // Callback for monitoring received serial data
@@ -43,15 +44,20 @@ ros2 run mapping_robot mcuNode
 
 
 
-  void MCUnode::beepCallback(const std_msgs::msg::String::SharedPtr msg) const
+  // void MCUnode::beepCallback(const std_msgs::msg::String::SharedPtr msg) const
+  // { // To test:  ros2 topic pub -1 /beep std_msgs/msg/String "data: 0"
+  //   RCLCPP_INFO(this->get_logger(), "beep: '%s'", msg->data.c_str());
+  //   int whichBeep = atoi(msg->data.c_str());
+  //   beep(whichBeep);
+  // }
+
+
+ /* void MCUnode::beepCallback(const mapping_robot_interfaces::msg::BeepType::SharedPtr msg) const
   { // To test:  ros2 topic pub -1 /beep std_msgs/msg/String "data: 0"
-    RCLCPP_INFO(this->get_logger(), "beep: '%s'", msg->data.c_str());
-    int whichBeep = atoi(msg->data.c_str());
-    beep(whichBeep);
+    beep(msg->beep_type);
+  void MCUnode::beepCallback(const mapping_robot_interfaces::msg::BeepType::SharedPtr msg) const
   }
-
-
-
+*/
 
 
 

@@ -10,6 +10,7 @@
 	#include "serialPortStuff.hpp"
 	#include "commonlyUsedFunctions.hpp"
 	#include "std_msgs/msg/float32_multi_array.hpp"
+	//#include "mapping_robot_interfaces/msg/BeepType.hpp"
 
 
 	#define TICKS_PER_METER    	2000   // This is just a guess at this point.
@@ -29,14 +30,16 @@ public:
 
 private:
   void displayMessageCallback(const std_msgs::msg::String::SharedPtr msg) const;
-  void beepCallback(const std_msgs::msg::String::SharedPtr msg) const;        
+  //void beepCallback(const std_msgs::msg::String::SharedPtr msg) const;        
+  //void beepCallback(const mapping_robot_interfaces::msg::BeepType::SharedPtr msg) const
   void driveMotorsCallback(const std_msgs::msg::Float32MultiArray::SharedPtr msg) const;
   void cpuReadyCallback(const std_msgs::msg::String::SharedPtr msg) const;
   void serialTimerCallback();
 
 
   rclcpp::Subscription<std_msgs::msg::String>::SharedPtr displayMessageSubscription;
-  rclcpp::Subscription<std_msgs::msg::String>::SharedPtr beepSubscription;
+  //rclcpp::Subscription<std_msgs::msg::String>::SharedPtr beepSubscription;
+  //rclcpp::Subscription<mapping_robot_interfaces::msg::BeepType>::SharedPtr beepSubscription;
   rclcpp::Subscription<std_msgs::msg::Float32MultiArray>::SharedPtr driveMotorsSubscription;
   rclcpp::Subscription<std_msgs::msg::String>::SharedPtr cpuReadySubscription;
 
