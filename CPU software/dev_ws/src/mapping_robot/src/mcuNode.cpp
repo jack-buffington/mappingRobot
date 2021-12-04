@@ -20,6 +20,9 @@ ros2 run mapping_robot mcuNode
     driveMotorsSubscription = this->create_subscription<std_msgs::msg::Float32MultiArray>("driveMotors", MESSAGE_QUEUE_DEPTH, std::bind(&MCUnode::driveMotorsCallback, this, _1));
     //beepSubscription = this->create_subscription<std_msgs::msg::String>("beep", MESSAGE_QUEUE_DEPTH, std::bind(&MCUnode::beepCallback, this, _1));
     //beepSubscription = this->create_subscription<mapping_robot_interfaces::msg::BeepType>("beep", MESSAGE_QUEUE_DEPTH, std::bind(&MCUnode::beepCallback, this, _1));
+    
+    //testSubscription = this->create_subscription<jack_test::msg::SampleMessage>("testTopic", MESSAGE_QUEUE_DEPTH, std::bind(&MCUnode::testCallback, this, _1));)
+
     cpuReadySubscription = this->create_subscription<std_msgs::msg::String>("cpuReady", MESSAGE_QUEUE_DEPTH, std::bind(&MCUnode::cpuReadyCallback, this, _1));
 
     // Callback for monitoring received serial data
@@ -29,6 +32,12 @@ ros2 run mapping_robot mcuNode
     voltagePublisher = this->create_publisher<std_msgs::msg::String>("batteryVoltage", MESSAGE_QUEUE_DEPTH);
     buttonPublisher = this->create_publisher<std_msgs::msg::String>("buttonPress", MESSAGE_QUEUE_DEPTH);
   }
+
+
+  // void MCUnode::testCallback(const jack_test::msg::SampleMessage::SharedPtr msg) const
+  // {
+  //   std::cout << "Received a message on testTopic!\n";
+  // }
 
 
   void MCUnode::displayMessageCallback(const std_msgs::msg::String::SharedPtr msg) const

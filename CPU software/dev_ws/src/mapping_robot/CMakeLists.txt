@@ -13,19 +13,29 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
+#find_package(mapping_robot_interfaces REQUIRED)
 
 
 include_directories(include)
 
+#rosidl_generate_interfaces(${PROJECT_NAME}
+#  "../mapping_robot_interfaces/msg/BeepType.msg"
+#  DEPENDENCIES mapping_robot_interfaces
+#)
 
 # In this section, different nodes are created.  To add a new node, add a pair of lines like below.  
 # Note how the add_executable line includes both the main source code as well as any other .cpp files that are needed.
 
 add_executable(mcuNode src/commonlyUsedFunctions.cpp src/serialPortStuff.cpp src/mcuNode.cpp)
-add_executable(manualDrivingNode  src/commonlyUsedFunctions.cpp src/manualDrivingNode.cpp)
-
 ament_target_dependencies(mcuNode rclcpp std_msgs)
+#ament_target_dependencies(mcuNode rclcpp std_msgs mapping_robot_interfaces)
+
+add_executable(manualDrivingNode  src/commonlyUsedFunctions.cpp src/manualDrivingNode.cpp)
 ament_target_dependencies(manualDrivingNode rclcpp std_msgs)
+
+add_executable(rplidarNode src/rplidarNode.cpp src/rplidarClass.cpp)
+ament_target_dependencies(rplidarNode rclcpp std_msgs sensor_msgs)
 
 install(TARGETS
 # include all nodes here.  Each one should be on a separate line.
