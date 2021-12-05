@@ -34,19 +34,96 @@ Publishes:
     // Publisher for the scan data
     scanPublisher = this->create_publisher<sensor_msgs::msg::LaserScan>("rplidarScan", MESSAGE_QUEUE_DEPTH);
 
-    scanDivider = 1;
+    scanDivider = 10; // Publish evey 10th scan by deafult.
+    scanCount = 0;
+    lastScanNumber = 100; // This needs to be any value other than 0 so that the first scan will be used.  
+                           // In reality, this prevents an edge case that almost certainly wouldn't happen.
   }
 
 
 
   void rplidarNode::scanCheckCallback()
   { // This callback happens 50 times per second.   I am having it happen that often so that there is minimal delay 
-    // between when the scan is complete and when it is pulished.   I really should rewrite this so that I don't have to poll 
+    // between when the scan is complete and when it is published.   I really should rewrite this so that I don't have to poll 
     // for new results but that seems like more work than I want at this moment.  I previously wrote the rplidarClass for 
     // something else but it turned out that there wasn't a rplidar node for ROS2 foxy so I am just using what I previously 
     // wrote here, even if it isn't exactly perfect.   If you are seeing this note then I may have determined that the 
     // results were good enough for my application.  Either that or you are looking at this code shortly after I first posted 
     // it.
+
+    // Check to see if there is a new scan
+    if(lidar.scanCount != lastScanNumber)
+    {
+      lastScanNumber = lidar.scanCount;
+      // Determine if this scan should be sent out
+      if(++scanCount == scanDivider) // Don't confuse this scanCount with the one 3 lines ago...
+      {
+        // Send out this scan
+        std::vector<rangeData> scan = lidar.getMostRecentScan();   
+        /* Package the data into the correct format   
+            Here is what is in the LaserScan message:
+            Header header            # timestamp in the header is the acquisition time of 
+                                     # the first ray in the scan.
+                                     #
+                                     # in frame frame_id, angles are measured around 
+                                     # the positive Z axis (counterclockwise, if Z is up)
+                                     # with zero angle being forward along the x axis
+                                     
+            float32 angle_min        # start angle of the scan [rad]
+            float32 angle_max        # end angle of the scan [rad]
+            float32 angle_increment  # angular distance between measurements [rad]
+
+            float32 time_increment   # time between measurements [seconds] - if your scanner
+                                     # is moving, this will be used in interpolating position
+                                     # of 3d points
+            float32 scan_time        # time between scans [seconds]
+
+            float32 range_min        # minimum range value [m]
+            float32 range_max        # maximum range value [m]
+
+            float32[] ranges         # range data [m] (Note: values < range_min or > range_max should be discarded)
+            float32[] intensities    # intensity data [device-specific units].  If your
+                                     # device does not provide intensities, please leave
+                                     # the array empty.
+        */
+
+        sensor_msgs::msg::LaserScan laserScanMessage;
+
+        float startAngle = scan[0].angleInRadians;
+        float endAngle = scan[scan.size() - 1].angleInRadians;
+        int numberOfMeasurements = scan.size();
+
+        laserScanMessage.angle_min = startAngle;
+        laserScanMessage.angle_max = endAngle;
+        laserScanMessage.angle_increment = (endAngle - startAngle) / numberOfMeasurements;
+
+        // TODO: Figure out the correct time increment
+        laserScanMessage.time_increment = 0;  // Time between one point and the next
+        laserScanMessage.scan_time = 0;       // Time between one scan and the next
+        laserScanMessage.range_min = 0.1;
+        laserScanMessage.range_max = 16;      // I think that the reality is that it will give data for further than this 
+
+        // Load up the ranges array.  
+        // TODO:  This
+        std::vector<float> ranges;
+        for(int I = 0; I < numberOfMeasurements; ++I)
+        {
+          float tempF = scan[I].distanceInMillimeters;
+          ranges.push_back(tempF / 1000);
+        } 
+
+        laserScanMessage.ranges = ranges;
+
+        // Publish the message.          
+
+        scanPublisher->publish(laserScanMessage);
+
+        // Set things up for next time.
+        scanCount = 0;
+      }
+    }
+
+      
 
   }
 
@@ -107,8 +184,8 @@ Publishes:
 
       PWMvalue = PWMvalueFloat;
     }
-    PWM = PWMvalue;
-
+    lidar.setPWM(PWMvalue);
+    
     RCLCPP_INFO(this->get_logger(), "rplidarPointsPerScan: '%s'", msg->data);
 
   }
@@ -117,7 +194,7 @@ Publishes:
   void rplidarNode::rplidarScanDividerCallback(const std_msgs::msg::Int32::SharedPtr msg)
   { // to test:  ros2 topic pub -1 /displayMessage std_msgs/msg/String "data: 2~0~testing..."   TODO:   rewrite this line
     RCLCPP_INFO(this->get_logger(), "rplidarScanDivider: '%s'", msg->data);
-
+    scanDivider = msg->data;
   }
 
 

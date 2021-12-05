@@ -44,6 +44,7 @@ class rplidarClass
 		void setPWM(int PWMvalue);
 		bool hasGoodHealth();
 		std::vector<rangeData> getMostRecentScan();
+		unsigned char scanCount;
 
 
 	private:
@@ -51,7 +52,7 @@ class rplidarClass
 		std::vector<rangeData> mostRecentScan;
 		bool shouldReadData; // tells the read thread if it should keep going
 		std::mutex mostRecentScanMutex;
-		unsigned char scanCount;
+		
 
 		const int DELAY_TIME_IN_MICROSECONDS = 4000;  // 2000 results in every 3rd or 4th read being successful
 		const double DEGREES_TO_RADIANS_MULTIPLIER = 3.1415926535/180.0;

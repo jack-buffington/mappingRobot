@@ -40,9 +40,10 @@ private:
   rclcpp::Publisher<sensor_msgs::msg::LaserScan>::SharedPtr scanPublisher;
 
   int scanDivider;
-  int PWM;  // TEMPORARY VARIABLE TO GET IT TO COMPILE
+  int scanCount;
+  unsigned int lastScanNumber;
   rplidarClass lidar;
-  
+
   rclcpp::TimerBase::SharedPtr scanCheckTimer;
 
 }; // End of the class

@@ -191,10 +191,10 @@ void rplidarClass::readRangeData()
 
 
 	std::vector<rangeData> partialScan;
-	rangeData temp; // The first entry has a number saved in the distance variable so that the main loop
-					// can know if the data is new or not.  
-	temp.distanceInMillimeters = ++scanCount;
-	partialScan.push_back(temp);
+	// rangeData temp; // The first entry has a number saved in the distance variable so that the main loop
+	// 				// can know if the data is new or not.  
+	// temp.distanceInMillimeters = ++scanCount;
+	// partialScan.push_back(temp);
 
 
 	while(shouldReadData)
