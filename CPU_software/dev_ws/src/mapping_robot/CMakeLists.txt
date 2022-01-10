@@ -30,8 +30,6 @@ include_directories(include)
 
 add_executable(mcuNode src/commonlyUsedFunctions.cpp src/serialPortStuff.cpp src/mcuNode.cpp)
 ament_target_dependencies(mcuNode rclcpp std_msgs)
-#ament_target_dependencies(mcuNode rclcpp std_msgs mapping_robot_interfaces)
-
 
 add_executable(rplidarNode  src/rplidarClass.cpp src/rplidarNode.cpp)
 ament_target_dependencies(rplidarNode rclcpp std_msgs sensor_msgs)
@@ -43,8 +41,8 @@ ament_target_dependencies(manualDrivingNode rclcpp std_msgs)
 install(TARGETS
 # include all nodes here.  Each one should be on a separate line.
   mcuNode
-  manualDrivingNode
   rplidarNode
+  manualDrivingNode
   DESTINATION lib/${PROJECT_NAME})
 
 ament_package()

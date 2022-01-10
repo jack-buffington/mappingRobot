@@ -46,7 +46,7 @@ Publishes:
 
 
 
-  rplidarNode::rplidarNode() : Node("mcu_node")
+  rplidarNode::rplidarNode() : Node("rplidar_node")  // What I have in Node is what shows up when I do ros2 node list if I ran this node by itself.
   {
     // Callbacks for commands to this node
     rplidarOnSubscription = this->create_subscription<std_msgs::msg::Bool>("rplidarOn", MESSAGE_QUEUE_DEPTH, std::bind(&rplidarNode::rplidarOnCallback, this, _1));
