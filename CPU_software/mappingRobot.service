@@ -1,0 +1,11 @@
+[Unit]
+Description=Starts up ROS2 and the mapping robot nodes.
+
+[Service]
+ExecStart=/bin/bash -c 'echo "Running mappingRobotStartupScript.sh."'
+ExecStart=/bin/bash -c 'bash /usr/bin/mappingRobotStartupScript.sh'
+Type=oneshot
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
