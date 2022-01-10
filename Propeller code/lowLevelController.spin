@@ -2,6 +2,23 @@
 ' doesn't block when it is looking for serial data so other things can happen
 ' simultaneously.
 
+
+
+' Message types to CPU:
+' 0: Tells CPU to shutdown because battery is getting low.
+' 1: Button press
+' 2: Battery voltage
+' 3: encoder message
+
+
+' Message types from CPU
+' 0: display message
+' 1: beep
+' 3: drive motors
+' 5: CPU shutting down
+' 6: request battery voltage
+' 7: CPU ready
+
 CON
     _CLKMODE = xtal1 + pll16x
     _XINFREQ = 5_000_000
@@ -93,6 +110,11 @@ VAR
     long    voltageCheckTime
     long    voltageCheckWindow
     long    voltageCheckCount
+    
+    long    encoderCheckTime
+    long    encoderCheckWindow
+    long    lastEncoder0
+    long    lastEncoder1
 
 
 PUB main
@@ -152,6 +174,8 @@ PUB main
   spinEncoderPosition0 := 0     ' Initial encoder value
   spinEncoderPosition1 := 0                           
   ENCODER.start(@numberOfEncoders) 
+  lastEncoder0 := 0
+  lastEncoder1 := 0
   
   
   ' Start up the velocity controller
@@ -175,9 +199,16 @@ PUB main
   serialRXstate := 0
   
 
-  voltageCheckTime := cnt + clkfreq ' one second from now
-  voltageCheckWindow := clkFreq / 50
+  voltageCheckTime := cnt + clkfreq ' one second from now.   It checks the voltage once per second
+  voltageCheckWindow := clkFreq / 50    ' 1/50th of a second
   voltageCheckCount := 0 ' Send an update to the CPU every 5 seconds
+
+  encoderCheckTime := cnt + clkfreq + (clkfreq / 20) ' The extra little delay ensures that voltageCheckTime and encoderCheckTime
+                                                     ' aren't at the same time. 
+  encoderCheckWindow := clkFreq / 50    ' 1/50th of a second
+  
+  
+  
   
   waitcnt(cnt + clkfreq * 10)   ' Uboot stops the boot if it receives any serial data during a part of the boot.  
                                 ' This prevents the voltage message from causing problems.
@@ -186,8 +217,10 @@ PUB main
   repeat 
     monitorButton
     lookForSerialMessage
-    monitorVoltage
     lookForCPUshutdown
+    
+    sendEncoderChange
+    monitorVoltage
     
 
         
@@ -290,6 +323,9 @@ PUB monitorButton
 
 
 
+
+
+
 PUB monitorVoltage | voltage, voltageInt, voltageFractional
     voltage := ((batteryValue - 8096) * 1000) / 842 ' battery voltage * 1000
     if voltage < BATTERY_DEAD
@@ -307,14 +343,15 @@ PUB monitorVoltage | voltage, voltageInt, voltageFractional
         voltageInt := voltage / 1000
         voltageFractional := voltage // 1000 ' // is modulus
         voltageFractional /= 10 ' I only want two decimal places of precision
+        
+
         oled.setTextRowCol(3,0)
         oled.putInt(voltageInt, 2, 1) ' int part with no leading zeros
         oled.putString(string("."))
         oled.putInt(voltageFractional, 2, 2) ' fractional part with leading zeros
         oled.putString(string("V"))
         voltageCheckTime += clkfreq     ' add another second to the time
-        
-        'sendBatteryMessage(voltage)        
+              
                 
         voltageCheckCount += 1
         if voltageCheckCount == 5
@@ -329,7 +366,7 @@ PUB sendShutdownMessage
     serialBuffer[1] := 2
     serialBuffer[2] := 0
     serialBuffer[3] := 0
-    
+
     ' Send the message
     repeat temp from 0 to 3
         serial.tx(1,serialBuffer[temp])   
@@ -398,7 +435,7 @@ PUB lookForSerialMessage | theByte
             'oled.setTextRowCol(3,1)
             'oled.putInt(serialMessageLength, 2, 2)
         
-        2:   ' ### RECEIVE MESSAGE AND COMPUTER CHECKSUM SIMULTANEOUSLY ###
+        2:   ' ### RECEIVE MESSAGE AND COMPUTE CHECKSUM SIMULTANEOUSLY ###
             serialBuffer[serialBytesReceived] := theByte
             serialBytesReceived := serialBytesReceived + 1
             serialChecksum ^= theByte
@@ -475,6 +512,9 @@ PUB lookForSerialMessage | theByte
                             
                             ' This is called just before shutting down.  The MCU will then watch the CPU_POWER_SIGNAL
                             ' to see when it goes low.  Once it does then the CPU is fully off and it can shut down.
+                            ' This isn't currently used but the intent is that it could use this message to get the system
+                            ' to go into a sleep state instead of a full shutdown.  For example, if the robot docked at 
+                            ' a charging station but it was desirable for it to wake up again when it was fully charged.
                             
                             
                             repeat while INA[CPU_POWER_SIGNAL] == 1
@@ -489,6 +529,8 @@ PUB lookForSerialMessage | theByte
                             ' #### Request battery voltage ####
                             ' #################################
                             ' 
+                            ' This may not be needed since the MCU program automatically sends the voltage periodically.   
+                            ' I left this in there in case something on the MCU needs to know the voltage RIGHT NOW!
                             'oled.setTextRowCol(1,0)
                             'oled.putString(string("Request Voltage "))
                             
@@ -557,3 +599,58 @@ PUB sendBatteryMessage(theVoltage)
     ' Send the message
     repeat temp from 0 to 7
         serial.tx(1,serialBuffer[temp])
+
+
+
+
+
+        
+
+PUB sendEncoderChange | encoder0diff, encoder1diff
+    ' Sends the change in encoder values every 1/10th of a second.  Does nothing if it is too early.
+    ' If the serial bus is starting to get bogged down then this routine could be adjusted so that 
+    ' The encoder difference isn't a 32-bit value but rather a signed 16-bit value.
+    ' If push comes to shove, I could probably do two signed 12-bit numbers by combining the two 
+    ' encoder differences into three bytes.  
+    
+    if ||(encoderCheckTime - cnt) < encoderCheckWindow ' || is abs
+        encoderCheckTime += clkfreq / 10       ' Next check in 1/0th of a second
+        
+        ' Find the difference since the last time this ran.
+        temp := spinEncoderPosition0
+        encoder0diff := temp - lastEncoder0
+        lastEncoder0 := temp
+        
+        temp := spinEncoderPosition1
+        encoder1diff := temp - lastEncoder1
+        lastEncoder1 := temp
+        
+
+        serialBuffer[0] := 85
+        serialBuffer[1] := 10
+        serialBuffer[2] := 3
+
+        'encoder0
+        serialBuffer[3] := encoder0diff & 255 
+        serialBuffer[4] := (encoder0diff >> 8) & 255
+        serialBuffer[5] := (encoder0diff >> 16) & 255
+        serialBuffer[6] := (encoder0diff >> 24) & 255
+
+        'encoder1
+        serialBuffer[7] := encoder1diff & 255 
+        serialBuffer[8] := (encoder1diff >> 8) & 255
+        serialBuffer[9] := (encoder1diff >> 16) & 255
+        serialBuffer[10] := (encoder1diff >> 24) & 255
+
+
+        'checksum
+        temp2 := 0
+        repeat temp1 from 2 to 10
+            temp2 ^= serialBuffer[temp1]
+            
+        serialBuffer[11] := temp2 
+
+        ' Send the message
+        repeat temp from 0 to 11
+            serial.tx(1,serialBuffer[temp])   
+

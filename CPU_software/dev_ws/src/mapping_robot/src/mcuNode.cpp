@@ -27,13 +27,10 @@ ros2 run mapping_robot mcuNode
     // Publishers that are used when a message is received from the MCU
     voltagePublisher = this->create_publisher<std_msgs::msg::String>("batteryVoltage", MESSAGE_QUEUE_DEPTH);
     buttonPublisher = this->create_publisher<std_msgs::msg::String>("buttonPress", MESSAGE_QUEUE_DEPTH);
+    encoderPublisher = this->create_publisher<std_msgs::msg::Float32MultiArray>("encoderChange", MESSAGE_QUEUE_DEPTH);
+
   }
 
-
-  // void MCUnode::testCallback(const jack_test::msg::SampleMessage::SharedPtr msg) const
-  // {
-  //   std::cout << "Received a message on testTopic!\n";
-  // }
 
 
   void MCUnode::displayMessageCallback(const std_msgs::msg::String::SharedPtr msg) const
@@ -55,9 +52,6 @@ ros2 run mapping_robot mcuNode
     int whichBeep = atoi(msg->data.c_str());
     beep(whichBeep);
   }
-
-
-
 
 
 
@@ -95,6 +89,7 @@ ros2 run mapping_robot mcuNode
     while(readCharFromSerialPort(&theChar, 0.001)) // time out in 1 ms.
     {
       // Show the bytes received for debug purposes
+      //std::cout << +theChar << ", ";
       switch(state)
       {
         case 0: // Start byte
@@ -147,6 +142,35 @@ ros2 run mapping_robot mcuNode
                   voltagePublisher->publish(message);
                   break;
                   }
+                case 3: // encoder message - This is periodically received as well.  As of writing this, it is being sent every 1/5th of a second.
+                  {
+                  // Two 32-bit values are sent, which represent the change since last time for the two encoders
+                  typeConverter t;
+
+                  t.bytes[0] = messageBuffer[1];
+                  t.bytes[1] = messageBuffer[2];
+                  t.bytes[2] = messageBuffer[3];
+                  t.bytes[3] = messageBuffer[4];
+                  int32_t encoder0 = t.s32;
+
+                  t.bytes[0] = messageBuffer[5];
+                  t.bytes[1] = messageBuffer[6];
+                  t.bytes[2] = messageBuffer[7];
+                  t.bytes[3] = messageBuffer[8];
+                  int32_t encoder1 = t.s32;
+                  
+                  // Publish this on a topic.         
+                  float encoder0float = encoder0;
+                  float encoder1float = encoder1;
+
+                  // TODO:   Convert the encoder values to meters 
+
+                  std_msgs::msg::Float32MultiArray msg;
+                  msg.data.push_back(encoder0float);
+                  msg.data.push_back(encoder1float);
+                  encoderPublisher->publish(msg);
+                  break;
+                  }
               }
             }
           }
@@ -155,6 +179,16 @@ ros2 run mapping_robot mcuNode
   }
 
 
+
+/*
+void joystickDrivingNode::publishMotorMessage(float leftMotor, float rightMotor)
+{ // This publishes a message that is subscribed to by the MCU node which causes the motors to go. 
+    std_msgs::msg::Float32MultiArray msg;
+    msg.data.push_back(leftMotor);
+    msg.data.push_back(rightMotor);
+    motorPublisher->publish(msg);
+}
+*/
 
 
 

@@ -31,8 +31,6 @@ public:
 private:
   void displayMessageCallback(const std_msgs::msg::String::SharedPtr msg) const;
   void beepCallback(const std_msgs::msg::String::SharedPtr msg) const;        
-  
-
   void driveMotorsCallback(const std_msgs::msg::Float32MultiArray::SharedPtr msg) const;
   void cpuReadyCallback(const std_msgs::msg::String::SharedPtr msg) const;
   void serialTimerCallback();
@@ -40,8 +38,6 @@ private:
 
   rclcpp::Subscription<std_msgs::msg::String>::SharedPtr displayMessageSubscription;
   rclcpp::Subscription<std_msgs::msg::String>::SharedPtr beepSubscription;
-  
-
   rclcpp::Subscription<std_msgs::msg::Float32MultiArray>::SharedPtr driveMotorsSubscription;
   rclcpp::Subscription<std_msgs::msg::String>::SharedPtr cpuReadySubscription;
 
@@ -49,6 +45,9 @@ private:
   
   rclcpp::Publisher<std_msgs::msg::String>::SharedPtr voltagePublisher;
   rclcpp::Publisher<std_msgs::msg::String>::SharedPtr buttonPublisher;
+	rclcpp::Publisher<std_msgs::msg::Float32MultiArray>::SharedPtr encoderPublisher;
+
+
 }; // End of the class
 
 

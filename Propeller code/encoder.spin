@@ -137,7 +137,7 @@ encoder08   mov     0-0, encoderPosition            ' Copy the adjusted position
 
 adjustEncoder
     ' This function takes encoderPosition, lastEncoder, and currentEncoder as inputs
-    ' It then concatenates currentEncoder and lastEncoder and uses that to adjust
+    ' It then xors currentEncoder and lastEncoder and uses that to adjust
     ' encoderPosition.  It then returns and encoderPosition is copied to where it 
     ' really needs to go.
     ' lastEncoder should have their values in the least significant bits of the long.
@@ -150,10 +150,11 @@ adjustEncoder
 
                 mov     encoderTemp, lastEncoder
                 xor     encoderTemp, currentEncoder     wz
-        if_nz   cmp     encoderTemp, #3                 wz    
-    ' If xoring of the two encoder values results in 0 or 1 then there should be no change
+                
+    ' If xoring of the two encoder values results in 0 or 3 then there should be no change
     ' 00: It didn't move
-    ' 11: It moved too fast and it doesn't know which way to go        
+    ' 11: It moved too fast and it doesn't know which way to go  
+        if_nz   cmp     encoderTemp, #3                 wz    
         if_z    jmp     #adjustEncoder_ret
         
     ' It is going up or down so let's figure out which way it is going.  To do that, I'll
