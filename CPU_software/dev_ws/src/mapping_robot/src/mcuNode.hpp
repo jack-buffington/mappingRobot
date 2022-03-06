@@ -30,10 +30,8 @@ public:
 
 private:
   void displayMessageCallback(const std_msgs::msg::String::SharedPtr msg) const;
-  //void beepCallback(const std_msgs::msg::String::SharedPtr msg) const;        
-  //void beepCallback(const mapping_robot_interfaces::msg::BeepType::SharedPtr msg) const;
+  void beepCallback(const std_msgs::msg::String::SharedPtr msg) const;        
   
-  //void testCallback(const jack_test::msg::SampleMessage::SharedPtr msg) const;
 
   void driveMotorsCallback(const std_msgs::msg::Float32MultiArray::SharedPtr msg) const;
   void cpuReadyCallback(const std_msgs::msg::String::SharedPtr msg) const;
@@ -41,10 +39,8 @@ private:
 
 
   rclcpp::Subscription<std_msgs::msg::String>::SharedPtr displayMessageSubscription;
-  //rclcpp::Subscription<std_msgs::msg::String>::SharedPtr beepSubscription;
-  //rclcpp::Subscription<mapping_robot_interfaces::msg::BeepType>::SharedPtr beepSubscription;
-
-  //rclcpp::Subscription<jack_test::msg::SampleMessage>::SharedPtr testSubscription;
+  rclcpp::Subscription<std_msgs::msg::String>::SharedPtr beepSubscription;
+  
 
   rclcpp::Subscription<std_msgs::msg::Float32MultiArray>::SharedPtr driveMotorsSubscription;
   rclcpp::Subscription<std_msgs::msg::String>::SharedPtr cpuReadySubscription;
