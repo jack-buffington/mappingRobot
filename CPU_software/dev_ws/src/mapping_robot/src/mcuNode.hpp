@@ -13,7 +13,7 @@
 	//#include "mapping_robot_interfaces/msg/BeepType.hpp"
 
 
-	#define TICKS_PER_METER    	2000   // This is just a guess at this point.
+	#define TICKS_PER_METER    	18909   	// This is the average of four measured runs where the robot ran between 2 and 3 meters.   
 	#define MESSAGE_QUEUE_DEPTH	10
 
 	void beep(int whichBeep);

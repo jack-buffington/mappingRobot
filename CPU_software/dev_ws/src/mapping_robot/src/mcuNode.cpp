@@ -27,7 +27,7 @@ ros2 run mapping_robot mcuNode
     // Publishers that are used when a message is received from the MCU
     voltagePublisher = this->create_publisher<std_msgs::msg::String>("batteryVoltage", MESSAGE_QUEUE_DEPTH);
     buttonPublisher = this->create_publisher<std_msgs::msg::String>("buttonPress", MESSAGE_QUEUE_DEPTH);
-    encoderPublisher = this->create_publisher<std_msgs::msg::Float32MultiArray>("encoderChange", MESSAGE_QUEUE_DEPTH);
+    encoderPublisher = this->create_publisher<std_msgs::msg::Float32MultiArray>("wheelEncoders", MESSAGE_QUEUE_DEPTH); 
 
   }
 
@@ -163,7 +163,12 @@ ros2 run mapping_robot mcuNode
                   float encoder0float = encoder0;
                   float encoder1float = encoder1;
 
-                  // TODO:   Convert the encoder values to meters 
+                  // Convert the encoder values to meters, also correct for them being negative 
+                  // To find this conversion, I did four runs between two and three meters and averaged the result.  
+                  encoder0float /= -TICKS_PER_METER;  // This one is negative because the motor is flipped around in the robot.  
+                  encoder1float /= TICKS_PER_METER; 
+                  std::cout << "wheelEnoders: " << encoder0float << ",\t\t" << encoder1float << std::endl;
+
 
                   std_msgs::msg::Float32MultiArray msg;
                   msg.data.push_back(encoder0float);
