@@ -185,17 +185,6 @@ ros2 run mapping_robot mcuNode
 
 
 
-/*
-void joystickDrivingNode::publishMotorMessage(float leftMotor, float rightMotor)
-{ // This publishes a message that is subscribed to by the MCU node which causes the motors to go. 
-    std_msgs::msg::Float32MultiArray msg;
-    msg.data.push_back(leftMotor);
-    msg.data.push_back(rightMotor);
-    motorPublisher->publish(msg);
-}
-*/
-
-
 
 
 
@@ -235,6 +224,7 @@ void beep(int whichBeep)
    messageBuffer[3] = whichBeep;
    computeChecksum(messageBuffer, sizeof(messageBuffer));
    sendBufferToSerialPort(messageBuffer, sizeof(messageBuffer));  
+   flushSerialPort();
 }
 
 
@@ -263,6 +253,7 @@ void sendTextToDisplay(int row, int col, std::string theText)
 
    computeChecksum(messageBuffer, bytesInMessage + 2);
    sendBufferToSerialPort(messageBuffer, bytesInMessage + 2);  
+   flushSerialPort();
 }
 
 
@@ -302,4 +293,5 @@ void driveMotors(float leftMotor, float rightMotor)
 
    computeChecksum(messageBuffer, sizeof(messageBuffer));
    sendBufferToSerialPort(messageBuffer, sizeof(messageBuffer));  
+   flushSerialPort();
 }
