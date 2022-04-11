@@ -136,14 +136,14 @@ PUB main
   shutdownMessageHasBeenSent := 0
  
   start_uarts
-  serial.str(0,string("Starting up...",13))
+  'serial.str(0,string("Starting up...",13))
   
   
   I2C.start(28, 29, 400000)
   oled.start($3C) ' The I2C start command is tucked into here
 
   oled.displayOn
-  serial.str(0,string("Display is now on",13))
+  'serial.str(0,string("Display is now on",13))
     
   oled.setPageMode
   
@@ -235,7 +235,7 @@ PUB main
 PUB start_uarts
   SERIAL.init                    
   'AddPort      (port,rxpin,  txpin,    ctspin,rtspin,rtsthreshold,mode,baudrate)
-  SERIAL.AddPort(0,   31,     30,       -1,    -1,    0,           0,   115200)
+  'SERIAL.AddPort(0,   31,     30,       -1,    -1,    0,           0,   115200)
   SERIAL.AddPort(1,   CPU_RX, CPU_TX,   -1,    -1,    0,           0,   115200)
 
   SERIAL.Start
@@ -423,15 +423,15 @@ PUB lookForSerialMessage | theByte
                 serialRXstate := 1
                 'oled.setTextRowCol(3,0)
                 'oled.putString(string("S               ")) ' Clear the line.
-                serial.str(0,string("S "))
+                'serial.str(0,string("S "))
             
         1:   ' ### BYTES IN MESSAGE ###
             serialMessageLength := theByte
             serialRXstate := 2
             serialBytesReceived := 0
             serialChecksum := 0
-            serial.dec(0, serialMessageLength)
-            serial.str(0,string(" ",13))
+            'serial.dec(0, serialMessageLength)
+            'serial.str(0,string(" ",13))
             'oled.setTextRowCol(3,1)
             'oled.putInt(serialMessageLength, 2, 2)
         
@@ -440,7 +440,7 @@ PUB lookForSerialMessage | theByte
             serialBytesReceived := serialBytesReceived + 1
             serialChecksum ^= theByte
             'oled.putString(string("B"))
-            serial.str(0,string("*"))
+            'serial.str(0,string("*"))
             
             if serialBytesReceived == serialMessageLength
                 
@@ -452,7 +452,7 @@ PUB lookForSerialMessage | theByte
                     'oled.putInt(serialBuffer[0],1,1)
                     '
                     
-                    serial.str(0,string(" Passed Checksum",13))
+                    'serial.str(0,string(" Passed Checksum",13))
                     
                     case serialBuffer[0]
                 
@@ -464,13 +464,13 @@ PUB lookForSerialMessage | theByte
                             temp1 := serialBuffer[1] ' row
                             temp2 := serialBuffer[2] ' column
                             
-                            serial.str(0,string("Row: "))                           
-                            serial.dec(0,temp1)
-                            serial.str(0,string(" Column: "))                        
-                            serial.dec(0,temp2)   
-                            serial.str(0,string(" Bytes in message: "))                        
-                            serial.dec(0,serialMessageLength)   
-                            serial.str(0,string(" ", 13))
+                            'serial.str(0,string("Row: "))                           
+                            'serial.dec(0,temp1)
+                            'serial.str(0,string(" Column: "))                        
+                            'serial.dec(0,temp2)   
+                            'serial.str(0,string(" Bytes in message: "))                        
+                            'serial.dec(0,serialMessageLength)   
+                            'serial.str(0,string(" ", 13))
                                                    
                             oled.setTextRowCol(temp1, temp2)
                             

@@ -20,6 +20,9 @@ ros2 run remote_computer joystick_driving_node
 You also need to run the joystick node:
 ros2 launch teleop_twist_joy teleop-launch.py joy_config:='xbox'
 
+You need to run the teleop-twist-joy node as well.
+sudo apt-get install ros-<rosdistro>-teleop-twist-joy
+
 
 
 */
@@ -53,7 +56,7 @@ ros2 launch teleop_twist_joy teleop-launch.py joy_config:='xbox'
 
 
     // The motor values need to be in meters per second so slow things down to a speed that the robot can deal with.
-    float maximumSpeedAdjuster = 1.5;  // TODO:  Adjust this once I have the robot actually driving correctly in meters per second 
+    float maximumSpeedAdjuster = 0.18;  // TODO:  Adjust this once I have the robot actually driving correctly in meters per second 
     leftMotor *= maximumSpeedAdjuster;
     rightMotor *= maximumSpeedAdjuster;
 
